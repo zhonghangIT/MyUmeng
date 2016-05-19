@@ -1,7 +1,11 @@
 package com.uniquedu.myumeng;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -11,6 +15,8 @@ import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
+import com.uniquedu.myumeng.activity.PushActivity;
+import com.uniquedu.myumeng.push.MyPushIntentService;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -26,6 +32,8 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.button_login)
     Button buttonLogin;
     UMShareAPI shareAPI;
+    @InjectView(R.id.button_push)
+    Button buttonPush;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,20 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
         shareAPI = UMShareAPI.get(this);
+        new AlertDialog.Builder(MainActivity.this)
+                .setMessage("必须同意该权限")
+                .setPositiveButton("打开所有权限", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //
+                        Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent2.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent2);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
     }
 
 
@@ -57,7 +79,7 @@ public class MainActivity extends BaseActivity {
         shareAPI.onActivityResult(requestCode, resultCode, data);
     }
 
-    @OnClick({R.id.button_share, R.id.button_login})
+    @OnClick({R.id.button_share, R.id.button_login, R.id.button_push})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_share:
@@ -65,6 +87,9 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.button_login:
                 sanfang();
+                break;
+            case R.id.button_push:
+                startActivity(new Intent(getApplicationContext(), PushActivity.class));
                 break;
         }
     }
@@ -98,4 +123,6 @@ public class MainActivity extends BaseActivity {
         SHARE_MEDIA platform = SHARE_MEDIA.QQ;
         shareAPI.doOauthVerify(this, platform, umAuthListener);
     }
+
+
 }

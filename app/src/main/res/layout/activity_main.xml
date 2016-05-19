@@ -26,4 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="第三方授权登录" />
+    <Button
+        android:id="@+id/button_push"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试推送界面" />
 </LinearLayout>
